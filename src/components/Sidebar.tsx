@@ -1,4 +1,7 @@
 import { BarChart3, Building2, CheckCircle2, LayoutDashboard, MapPin, Vote } from "lucide-react";
+import { Phone } from "lucide-react";
+import { SUPPORT, prettyPhone, waLink } from "../config";
+import WhatsAppIcon from "./WhatsAppIcon";
 import type { ViewId } from "../types";
 
 const ITEMS: { id: ViewId; label: string; icon: typeof Vote }[] = [
@@ -31,6 +34,13 @@ export default function Sidebar({ view, onChange }: { view: ViewId; onChange: (v
         <div className="integrity-title">INTEGRITY NOTE</div>
         <p>Every result is preserved with its recorded date and time.</p>
         <div className="audit"><CheckCircle2 size={13} /> Audit ready</div>
+      </div>
+      <div className="support">
+        <div className="nav-label">SUPPORT</div>
+        <a href={`tel:+${SUPPORT.phone}`}><Phone size={15} aria-hidden="true" /> {prettyPhone(SUPPORT.phone)}</a>
+        <a href={waLink(SUPPORT.whatsapp, "Hello, I need support with the Oriyomi Victory Dashboard.")} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon size={15} /> Chat on WhatsApp
+        </a>
       </div>
     </aside>
   );

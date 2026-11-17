@@ -172,3 +172,14 @@ td:first-child { font-weight: 500; }
 .hint { margin-top: 10px; font-size: 12px; text-align: center; color: var(--muted); }
 .hint.error { color: #b42318; }
 .hint.ok { color: var(--green); font-weight: 600; }
+
+.wa-row { display: flex; gap: 8px; }
+.wa-btn { flex: 1; min-height: 44px; display: grid; place-items: center; border-radius: 10px; background: #25d366; color: #fff; transition: filter .18s, transform .18s; }
+.wa-btn:hover:not(.off) { filter: brightness(.92); }
+.wa-btn.off { background: #cfe9da; color: #fff; cursor: not-allowed; }
+.wa-btn:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.wa label { margin-top: 16px; }
+.support { margin-top: auto; padding-top: 14px; display: flex; flex-direction: column; gap: 4px; }
+.support .nav-label { margin-left: 0; }
+.support a { display: flex; gap: 8px; align-items: center; min-height: 36px; color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 500; }
+.support a:hover { color: var(--green); }

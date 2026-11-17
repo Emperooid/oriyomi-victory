@@ -13,7 +13,7 @@ export interface ResultsApi {
   resetDemo(): Promise<ResultEntry[]>;
 }
 
-const KEY = "oriyomi-dashboard:results:v2";
+const KEY = "oriyomi-dashboard:results:v3";
 
 const read = (): ResultEntry[] => {
   try {

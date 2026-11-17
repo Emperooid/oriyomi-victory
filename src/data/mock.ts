@@ -20,15 +20,17 @@ export function mockResults(): ResultEntry[] {
 
   ELECTIONS.forEach((electionId, e) => {
     LGAS.forEach((lga, l) => {
-      // each LGA leans toward one party, which changes per election
-      const lean = PARTIES[(l * 7 + e * 3 + Math.floor(rand() * 2)) % PARTIES.length].id;
       for (let i = 0; i < ENTRIES_PER_LGA; i++) {
+        // Accord wins 4 of every 5 polling units; the 5th goes to a rotating rival
+        const k = (e * LGAS.length + l) * ENTRIES_PER_LGA + i;
+        const rivals = PARTIES.filter((p) => p.id !== "ACCORD");
+        const winnerId: PartyId = k % 5 === 4 ? rivals[Math.floor(k / 5) % rivals.length].id : "ACCORD";
         const ward = pick(wardsFor(lga));
         const pollingUnit = pick(unitsFor(ward));
         const votes = {} as Record<PartyId, number>;
         for (const p of PARTIES) {
-          const strength = p.id === lean ? 260 : 120;
-          votes[p.id] = Math.round(strength * (0.4 + rand()) + rand() * 40);
+          const strength = p.id === winnerId ? (winnerId === "ACCORD" ? 720 : 220) : p.id === "ACCORD" ? 45 : 35;
+          votes[p.id] = Math.round(strength * (0.85 + rand() * 0.3));
         }
         const entries = Object.entries(votes) as [PartyId, number][];
         const total = entries.reduce((s, [, v]) => s + v, 0);

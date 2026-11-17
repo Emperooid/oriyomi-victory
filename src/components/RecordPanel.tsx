@@ -1,5 +1,7 @@
 import { CheckCircle2, X } from "lucide-react";
 import { useState } from "react";
+import WhatsAppIcon from "./WhatsAppIcon";
+import { WHATSAPP_LINES, waLink } from "../config";
 import { ELECTIONS, LGAS, PARTIES, unitsFor, wardsFor } from "../data/oyo";
 import type { NewResult, PartyId } from "../types";
 
@@ -43,6 +45,17 @@ export default function RecordPanel({ defaultElection, open, onClose, onSubmit }
     setDone(true);
     setTimeout(() => setDone(false), 2500);
   };
+
+  const waText = () =>
+    [
+      `*Polling unit result*`,
+      ELECTIONS.find((e) => e.id === election)?.name,
+      `LGA: ${lga}`,
+      `Ward: ${ward}`,
+      `Polling unit: ${unit}`,
+      ...PARTIES.map((p) => `${p.label}: ${toVotes(votes)[p.id]}`),
+      `Total: ${Object.values(toVotes(votes)).reduce((a, b) => a + b, 0)}`,
+    ].join("\n");
 
   return (
     <aside className={`record ${open ? "open" : ""}`} id="record-panel">
@@ -93,6 +106,25 @@ export default function RecordPanel({ defaultElection, open, onClose, onSubmit }
       <button className="primary" disabled={!ready} onClick={submit}>
         <CheckCircle2 size={16} /> {done ? "Result recorded" : "Submit official results"}
       </button>
+      <div className="wa">
+        <label>SEND BY WHATSAPP ALSO</label>
+        <div className="wa-row">
+          {WHATSAPP_LINES.map((l) => (
+            <a
+              key={l.number}
+              className={`wa-btn ${missing.length ? "off" : ""}`}
+              href={missing.length ? undefined : waLink(l.number, waText())}
+              target="_blank" rel="noopener noreferrer"
+              aria-disabled={missing.length > 0}
+              aria-label={`Send result to WhatsApp ${l.label}`}
+              title={l.label}
+            >
+              <WhatsAppIcon />
+            </a>
+          ))}
+        </div>
+      </div>
+
       {missing.length > 0 && <p className="hint">Select {missing.join(", ")} to enable submit.</p>}
       {error && <p className="hint error" role="alert">{error}</p>}
       {done && <p className="hint ok" role="status">Saved. See it at the top of the polling unit report.</p>}
