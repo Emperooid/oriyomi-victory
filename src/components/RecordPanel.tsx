@@ -1,8 +1,11 @@
 import { CheckCircle2, X } from "lucide-react";
 import { useState } from "react";
-import { emptyVotes } from "../api";
 import { ELECTIONS, LGAS, PARTIES, unitsFor, wardsFor } from "../data/oyo";
 import type { NewResult, PartyId } from "../types";
+
+const blank = () => Object.fromEntries(PARTIES.map((p) => [p.id, ""])) as Record<PartyId, string>;
+const toVotes = (raw: Record<PartyId, string>) =>
+  Object.fromEntries(PARTIES.map((p) => [p.id, Math.max(0, Math.floor(Number(raw[p.id]) || 0))])) as Record<PartyId, number>;
 
 interface Props {
   defaultElection: string;
@@ -16,7 +19,7 @@ export default function RecordPanel({ defaultElection, open, onClose, onSubmit }
   const [lga, setLga] = useState("");
   const [ward, setWard] = useState("");
   const [unit, setUnit] = useState("");
-  const [votes, setVotes] = useState(emptyVotes());
+  const [votes, setVotes] = useState(blank());
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -28,13 +31,13 @@ export default function RecordPanel({ defaultElection, open, onClose, onSubmit }
     setBusy(true);
     setError("");
     try {
-      await onSubmit({ electionId: election, lga, ward, pollingUnit: unit, votes });
+      await onSubmit({ electionId: election, lga, ward, pollingUnit: unit, votes: toVotes(votes) });
     } catch {
       setError("Could not save this result. Please try again.");
       setBusy(false);
       return;
     }
-    setVotes(emptyVotes());
+    setVotes(blank());
     setUnit("");
     setBusy(false);
     setDone(true);
@@ -79,12 +82,10 @@ export default function RecordPanel({ defaultElection, open, onClose, onSubmit }
         <div key={p.id} className="vote-row" style={{ borderLeftColor: p.color }}>
           <span>{p.label}</span>
           <input
-            type="number" min={0} inputMode="numeric"
+            type="number" min={0} inputMode="numeric" placeholder="0"
+            aria-label={`${p.label} votes`}
             value={votes[p.id]}
-            onFocus={(e) => e.target.select()}
-            onChange={(e) =>
-              setVotes((v) => ({ ...v, [p.id as PartyId]: Math.max(0, Math.floor(Number(e.target.value) || 0)) }))
-            }
+            onChange={(e) => setVotes((v) => ({ ...v, [p.id]: e.target.value }))}
           />
         </div>
       ))}
